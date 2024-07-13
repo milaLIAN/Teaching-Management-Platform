@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.StudentMapper">
+
+    <sql id="Base_Column_List">
+        id,username,password,name,avatar,role,college_id,speciality_id,class_id,score,grade_id,gpa
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Student">
+        select student.*, college.name as collegeName, speciality.name as specialityName, classes.name as className,grade.name as gradeName
+        from student
+        left join college on student.college_id = college.id
+        left join speciality on student.speciality_id = speciality.id
+        left join classes on student.class_id = classes.id
+        left join grade on student.grade_id = grade.id
+        <where>
+            <if test="id != null"> and id= #{id}</if>
+            <if test="username != null"> and username like concat('%', #{username}, '%')</if>
+            <if test="password != null"> and password= #{password}</if>
+            <if test="name != null"> and name= #{name}</if>
+            <if test="avatar != null"> and avatar= #{avatar}</if>
+            <if test="role != null"> and role= #{role}</if>
+        </where>
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Student">
+        select
+        <include refid="Base_Column_List" />
+        from student
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from student
+        where  id = #{id}
+    </delete>
+    <!--college_id,speciality_id,class_id,score-->
+<!-- insert into Student prefix（就是左括号） 下面的一串（就是要插入的属性名）suffix（就是右括号）values( 同理，要插入的属性值 ) 这就是要执行的插入的sql语句，属性和属性值顺序要一一对应-->
+    <insert id="insert" parameterType="com.example.entity.Student" useGeneratedKeys="true">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>                    <!--当值不为空时才传进去-->
+                <if test="username != null">username,</if>
+                <if test="password != null">password,</if>
+                <if test="name != null">name,</if>
+                <if test="avatar != null">avatar,</if>
+                <if test="role != null">role,</if>
+                <if test="collegeId!= null">college_id,</if>
+                <if test="specialityId!= null">speciality_id,</if>
+                <if test="classId != null">class_id,</if>
+                <if test="gradeId != null">grade_id,</if>
+               <if test="score != null">score,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id},</if>
+                <if test="username != null">#{username},</if>
+                <if test="password != null">#{password},</if>
+                <if test="name != null">#{name},</if>
+                <if test="avatar != null">#{avatar},</if>
+                <if test="role != null">#{role},</if>
+            <if test="collegeId!= null">#{collegeId},</if>
+            <if test="specialityId!= null">#{specialityId},</if>
+            <if test="classId != null">#{classId},</if>
+            <if test="gradeId != null">#{gradeId},</if>
+            <if test="score != null">#{score},</if>
+        </trim>
+    </insert>
+<!--update student set 某个属性（当属性不为空时）= #{属性}（属性值）where id = #{id} -->
+    <!--可知参数值的表示为 #{参数名} -->
+    <update id="updateById" parameterType="com.example.entity.Student">
+        update Student
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="collegeId != null">
+                college_id = #{collegeId},
+            </if>
+            <if test="specialityId != null">
+                speciality_id = #{specialityId},
+            </if>
+            <if test="classId != null">
+                class_id = #{classId},
+            </if>
+            <if test="gradeId != null">
+                grade_id = #{gradeId},
+            </if>
+            <if test="score!= null">
+                score = #{score},
+            </if>
+            <if test="gpa!= null">
+                gpa = #{gpa},
+            </if>
+        </set>
+        where id = #{id} 
+    </update>
+
+</mapper>

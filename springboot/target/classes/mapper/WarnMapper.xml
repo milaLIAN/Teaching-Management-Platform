@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.WarnMapper">
+
+    <sql id="Base_Column_List">
+        id,title,content,time,user
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Warn">
+        select warn.*,course.name as courseName,student.name as studentName,score.score as scoreValue
+        from warn
+        left join score on warn.score_id = score.id
+        left join student on warn.student_id = student.id
+        left join course on warn.course_id = course.id
+        <where>
+            <if test="id != null"> and id= #{id}</if>
+            <if test="studentId != null"> and warn.student_id= #{studentId}</if>
+            <if test="courseId != null"> and warn.course_id= #{courseId}</if>
+            <if test="content != null"> and content like concat('%', #{content}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Warn">
+        select
+        <include refid="Base_Column_List" />
+        from warn
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from warn
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Warn" useGeneratedKeys="true">
+        insert into warn
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="studentId != null">student_id,</if>
+                <if test="courseId != null">course_id,</if>
+                <if test="scoreId != null">score_id,</if>
+                <if test="content != null">content,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id},</if>
+                <if test="studentId != null">#{studentId},</if>
+                <if test="courseId != null">#{courseId},</if>
+                <if test="scoreId != null">#{scoreId},</if>
+                <if test="content != null">#{content},</if>
+
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Warn">
+        update warn
+        <set>
+            <if test="studentId != null">
+                student_id = #{studentId},
+            </if>
+            <if test="courseId != null">
+                course_id = #{courseId},
+            </if>
+            <if test="scoreId != null">
+                score_id = #{scoreId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+        </set>
+        where id = #{id} 
+    </update>
+
+</mapper>
